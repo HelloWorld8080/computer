@@ -1,0 +1,7 @@
+https://api.wangzi.uk/sub?target=clashr&url=https%3A//wangzi.uk/link/xvfnERuf10yqCSYD%3Fmu%3D3
+服务器地址：alihka.cookies97.com
+服务器端口：46882
+加密方式：chacha20-ietf-poly1305
+密码：EKdOY4
+混淆：simple_obfs_tls
+混淆参数：6e62335418.microsoft.com

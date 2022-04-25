@@ -36,3 +36,41 @@ http://blog.ccyg.studio/article/4f6cfa0a-ad98-4adb-af08-79a8a5b1d674/
 - `grub-mkconfig -o /boot/grub/grub.cfg` 更新grup配置文件。
 - `systemctl enable gdm` 开机自启动图形化界面。
 - 添加终端快捷键 https://blog.csdn.net/qq_15601471/article/details/92781475
+
+# 安装bochs
+注意点
+- `bochs -q`
+- `bkimage`
+- `nasm hello.asm -o hello.bin`
+- `dd if=hello.bin of=master.img bs=512 count=1 conv=notrunc`
+
+# 编写程序
+- hello.asm
+``` asm
+ mov ax, 3
+  int 0x10
+  mov ax, 0xb800
+  mov ds,ax
+  mov byte [0],'H'
+  mov byte [1],11110000b
+  mov byte [2],'E'
+  mov byte [4],'L'
+  mov byte [6],'L'
+
+  mov byte [8],'O'
+  mov byte [10],' '
+  mov byte [12],'W'
+
+  mov byte [14],'O'
+
+  mov byte [16],'R'
+  mov byte [18],'L'
+  mov byte [20],'D'
+
+  halt:
+    jmp halt
+
+  times 510 - ($ - $$) db 0
+  db 0x55, 0xaa
+```
+ 
