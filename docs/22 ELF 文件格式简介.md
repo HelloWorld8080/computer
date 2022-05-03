@@ -30,7 +30,8 @@ C 语言 --> 汇编
     gcc -m32 file.o -static /将o文件转换为可执行文件(默认文件名为a.out) 
     gcc -m32 file.o -static -nostartfiles/在不使用链接器包裹编译为可执行文件 
     gcc -m32 file.o -static -nostartfiles -e main /以main为入口标签(entry symbol)入在不使用链接器包裹编译为可执行文件 
-
+---
+    as -32 att.s -o att.o /使用gas将AT&T格式的汇编语言转化为o文件
 PIE - Position Independent Executable
 
 Intel / AT&T
