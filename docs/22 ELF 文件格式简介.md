@@ -14,12 +14,22 @@ C 语言 --> 汇编
 - 数据
     - .data / 已经初始化过的数据
     - .bss / 未初始化的数据 - buffer 缓存区域
+---
+    nasm file.asm -f elf32 -o flie.o /将asm文件转化为o文件 
 
 ---
     readelf -e file.o
 
 ---
     objdump -d a.out
+---
+    objdump -d a.o -M intel /将AT&T格式的h汇编转换为Intel格式
+
+---
+    gcc -m32 -S hello.c -o hello.s /将c文件转化为asm文件
+    gcc -m32 file.o -static /将o文件转换为可执行文件(默认文件名为a.out) 
+    gcc -m32 file.o -static -nostartfiles/在不使用链接器包裹编译为可执行文件 
+    gcc -m32 file.o -static -nostartfiles -e main /以main为入口标签(entry symbol)入在不使用链接器包裹编译为可执行文件 
 
 PIE - Position Independent Executable
 
