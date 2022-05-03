@@ -1,0 +1,9 @@
+build/boot.bin
+build/master.img
+build/master.vmdk
+build/bx_enh_dbg.ini
+build/master.img.lock
+
+bochs/pkg
+bochs/src
+bochs/bochs-2.6.11*
