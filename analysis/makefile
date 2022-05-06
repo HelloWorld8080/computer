@@ -12,6 +12,9 @@ CFLAGS:=-static \
 				# -masm=intel intel格式编译
 DEBUG:= -g
 
+%.pre:%.c
+	gcc $(CFLAGS) -E $< -o $@
+
 %.o:%.c
 	gcc $(CFLAGS) $(DEBUG) -c $< -o $@ 
 

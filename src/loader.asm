@@ -1,6 +1,6 @@
 [org 0x1000]
 
-xchg bx,bx
+; xchg bx,bx
 check_memory:
   mov ax,0
   mov es,ax
@@ -18,7 +18,7 @@ check_memory:
   inc word [ards_count]
   cmp ebx,0
   jnz .next
-  xchg bx,bx
+  ; xchg bx,bx
   jmp prepare_protect_mode
 ;   mov cx,[ards_count]
 ;   mov si,0
@@ -73,9 +73,91 @@ protect_enable:
 
   call setup_page
 
-  mov byte [0xc00b8000],'Q'
+  mov edi,0x10000
+  mov ecx,10
+  mov bl,100
   xchg bx,bx
+  call read_disK
+  jmp code_selector:0x11000
+
   jmp $
+
+read_disK:
+;edi读取硬盘到内存的地址
+;ecx 存读取扇区起始地址
+;bl 存扇区数量
+	push edi
+	push ecx
+	mov dx,0x1f2
+	mov al,bl
+	out dx,al;设置扇区数量
+
+	mov al,cl
+	inc dx;0x1f3
+	out dx,al
+	shr ecx,8
+
+	mov al,cl
+	inc dx;0x1f4
+	out dx,al;除了al，out不支持别的寄存器
+	shr ecx,8
+
+	mov al,cl
+	inc dx;0x1f5
+	out dx,al
+	shr ecx,8
+
+	and cl,0b1111
+	inc dx;0x1f6
+	mov al,0b1110_0000;设置访问磁盘方式
+	or al,cl
+	out dx,al
+
+	inc dx;0x1f7
+	mov al,0x20;读硬盘
+	out dx,al
+
+	mov cl,bl
+	call .read
+	pop ecx
+	pop edi
+	ret
+
+.read:
+	push cx
+	call .waits
+	call .reads
+	pop cx
+	loop .read
+	ret
+
+.waits:
+	mov dx,0x1f7
+	mov al,0x20;
+	.check:
+		nop
+		nop
+		nop;加一点延迟
+
+		in al,dx
+		and al,0b1000_1000
+		cmp al,0b0000_1000
+		jnz .waits
+	ret
+
+.reads:
+	mov dx,0x1f0
+	mov cx,256
+	.readw:
+		nop
+		nop
+		nop
+		
+		in ax,dx
+		mov [edi],ax
+		add edi,2
+		loop .readw
+	ret
 
 PDE equ 0x2000;页目录
 PTE equ 0x3000;页表位置
