@@ -12,8 +12,10 @@ CFLAGS:=-static \
 				# -masm=intel intel格式编译
 DEBUG:= -g
 
-%.pre:%.c
-	gcc $(CFLAGS) -E $< -o $@
+# %.pre:%.c
+# 	gcc $(CFLAGS) -E $< -o $@
+%.out:%.c
+	gcc $(CFLAGS) $(DEBUG) $< -o $@ 
 
 %.o:%.c
 	gcc $(CFLAGS) $(DEBUG) -c $< -o $@ 
@@ -23,6 +25,8 @@ DEBUG:= -g
 
 # call.out: call.o addcall.o
 # 	gcc $(CFLAGS) $(DEBUG) $^ -o $@
+cstring.out: astring.o cstring.o
+	gcc $(CFLAGS) $(DEBUG) $^ -o $@
 
 call.out: call.o subcall.o
 	gcc $(CFLAGS) $(DEBUG) $^ -o $@
@@ -37,4 +41,4 @@ assembly:assembly.c
 .PHONY: hello.s
 hello.s:hello.c
 	gcc  $(CFLAGS) -S $< -o $@ 
-
+	
