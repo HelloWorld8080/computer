@@ -25,6 +25,9 @@ DEBUG:= -g
 
 # call.out: call.o addcall.o
 # 	gcc $(CFLAGS) $(DEBUG) $^ -o $@
+float2.out: float2.o
+	gcc $(CFLAGS) $(DEBUG) $^ -o $@
+	
 cstring.out: astring.o cstring.o
 	gcc $(CFLAGS) $(DEBUG) $^ -o $@
 
