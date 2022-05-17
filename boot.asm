@@ -1,6 +1,7 @@
 [org 0x7c00]
 xchg bx,bx
 mov ax,3
+xchg bx,bx
 int 0x10
 xchg bx,bx
 mov di,0x1000
