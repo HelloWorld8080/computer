@@ -1,4 +1,5 @@
 [org 0x7c00]
+xchg bx,bx
 mov ax,3
 int 0x10
 xchg bx,bx
