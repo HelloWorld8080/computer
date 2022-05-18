@@ -1,10 +1,12 @@
 [org 0x7c00]
 mov ax,3
 int 0x10
-xchg bx,bx
+mov si,booting
+call print
 mov di,0x1000
-mov ecx,0
-mov bl,1
+mov ecx,2
+mov bl,4
+
 read_disK:
   
   mov dx, 0x1f2;设置扇区数量
@@ -39,17 +41,26 @@ read_disK:
   xor ecx,ecx
   mov cl,bl
 
+  xchg bx,bx
   call .read
 
   xchg bx,bx
-  jmp $
   
+  cmp word [0x1000],0x55aa
+  jnz .error
+  jmp 0:0x1002
+  jmp $
+.error:
+  mov si,error_message
+  call print
+  jmp $
 .read:
   push cx
   call .waits
   call .reads
-  loop .read
   pop cx
+  loop .read
+  ret
 .waits:
   mov dx,0x1f7
   .check:
@@ -73,8 +84,24 @@ read_disK:
     add edi,2
     loop .readw
   ret
+print:
+  mov ah,0x0e
+  call .next
+  ret
+.next:
+  mov al, [si]
+  cmp al,0
+  jz .done
+  int 0x10
+  inc si
+  jmp .next
+.done:
+  ret
 
-
+error_message:
+  db "boot loader error....",10,13,0
+booting:
+  db "booting Olinux....",10,13,0
 times 510 - ($ - $$) db 4
 
 db 0x55, 0xaa
