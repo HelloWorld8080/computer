@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/static/index.css">
+</head>
+
+<body>
+
+<div class="total">
+    <div class="header">
+        <img src="/static/logo.png" alt="" srcset="" width="90px"/>
+    </div>
+    <div class="content">
+        <div class="left">
+            <div class="camera_shot">
+                <button type="button" id="shot"  >拍照</button>
+            </div>
+            <div class="picture-list"></div>
+        </div>
+        <div class="center">
+            <div>
+            </div>
+        </div>
+        <div class="right">
+            <div class="table">
+                <h2>识别结果</h2>
+                <div id = "table_head">
+                    <table>
+                        <tr>
+                            <th>序号</th>
+                            <th>码类型</th>
+                            <th>码内容</th>
+                        </tr>
+                    </table>
+                </div>
+                <div id="table_body">
+                    <table>
+
+                    </table>
+                </div>
+
+            </div>
+            <div class="form">
+                <h2>相机设置</h2>
+                <form action="" id="form_table">
+                    <table>
+                        <tr>
+                            <td>曝光时间</td>
+                            <td>
+                                <select name="exposure_time">
+                                    <option value="1">1s</option>
+                                    <option value="2">2s</option>
+                                    <option value="5">5s</option>
+                                    <option value="10">10s</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>曝光度</td>
+                            <td><input id="range" onchange="change()" type="range" min="0" max="100" step="5" name="exposure_value" value="10"/><span id="value">10</span></td>
+                        </tr>
+                    </table>
+                    <button type="button" id="submit">提交</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="footer">
+</div>
+
+</div>
+</body>
+<!--<script src="/static/index.js"></script>-->
+<script type="text/javascript" src="/lib/jquery-3.2.1.min.js"></script>
+<script>
+    const pictureList = document.querySelector(".picture-list");
+    const center = document.querySelector(".center");
+    const bigImg = center.querySelector("div");
+    const table = document.querySelector("#table_body").querySelector("table")
+    console.log("fd");
+    let tableData = []
+    let curimg = {}
+    let oldimg = {}
+    oldimgNode = null
+    curimgNode = null
+    const serverUrl = "http://192.168.1.100:5000"
+    window.onload = function () {
+        console.log("fdfd");
+
+        const footer = document.querySelector(".footer"),
+            year = new Date().getFullYear();
+        footer.textContent = `©2021-${year} 上海指象智能科技有限公司 Powered by EIM`;
+        // 首次渲染以第一个数据、图片为准
+        // 左边图片渲染
+        //获取数据
+        $.ajax({
+            type: "get",
+            url: serverUrl+"/get_result",
+            dataType: "json",
+            success: function (data) {
+                if (data.constructor === Array && data.length === 0) {
+                    pictureList.textContent = "暂无数据";
+                    const centerImg = document.createElement("img");
+                    centerImg.src = "/static/nodata.png"
+                    bigImg.appendChild(centerImg);
+                    return
+                }
+                curimg = data&&data[data.length-1]
+                tableData = data
+                render()
+                curimgNode = document.querySelector('.picture-list').firstChild
+
+            }
+        });
+    };
+    function render(){
+        for (let item of tableData) {
+             renderPictureList(item)
+        }
+         // 中间图片渲染
+        const centerImg = document.createElement("img");
+        centerImg.src = curimg['image_result'];
+        bigImg.appendChild(centerImg);
+        // 表格渲染
+        changeTableData(curimg['data']);
+    }
+    function renderPictureList(item){
+        const img = document.createElement("img");
+        if (curimg['key'] === item.key) {
+            img.className = "choose-img";
+        }
+        img.src = item.image;
+        img.setAttribute("key", item.key);
+        img.addEventListener("click", chooseImg);
+        pictureList.insertBefore(img,pictureList.firstChild);
+    }
+    //高亮选中图片
+    function aliveImg(){
+        if(oldimgNode){oldimgNode.className = ""}
+        if(curimgNode){curimgNode.className = "choose-img"}
+    }
+    function chooseImg(e) {
+        const key = e.target.getAttribute("key");
+        oldimgNode = curimgNode
+        curimgNode = e.srcElement
+        aliveImg()
+        curimg = tableData.find(item=>item.key === key)
+        // 更换图片
+        changeCenterImg(curimg['image_result']);
+        // 更新表格数据
+        changeTableData(curimg['data']);
+    }
+
+    // 更换中间图片，参数为图片地址
+    function changeCenterImg(data) {
+        const img = center.querySelector("div").querySelector("img");
+        img.src = data;
+    }
+
+    // 渲染表格数据，参数为数据数组
+    function changeTableData(arr) {
+        table.innerHTML= ''
+        // 表头
+        arr.forEach((item) => {
+            const tr = document.createElement("tr");
+            let index_td = document.createElement("td");
+            let type_td = document.createElement("td");
+            let content_td = document.createElement("td");
+            type_td.style.color = item.type === "error"? "red":"black"
+            index_td.textContent = item.index
+            type_td.textContent = item.type
+            content_td.textContent = item.content
+            tr.appendChild(index_td)
+            tr.appendChild(type_td)
+            tr.appendChild(content_td)
+            table.appendChild(tr)
+        });
+    }
+    function change(){
+        let value =  document.getElementById('range').value;
+        document.getElementById('value').innerHTML = value
+    }
+
+    // console.log('fdfdfdsf')
+    $("#submit").click(function (e) {
+        console.log("submittableData", $('#form_table').serialize())
+        $.ajax({
+            type: "get",
+            url: serverUrl + "/setParameter?" + $('#form_table').serialize(),
+            success: function(data){
+                alert(data);
+            }
+        });
+        return false
+    });
+    $("#shot").click(function (e) {
+        $.ajax({
+            type: "get",
+            url: serverUrl + "/shot",
+            success: function(data){
+                tableData.push(data)
+                curimg = data
+                renderPictureList(curimg)
+                oldimgNode = curimgNode
+                curimgNode = document.querySelector('.picture-list').firstChild
+                aliveImg()
+                changeCenterImg(curimg['image_result']);
+                // 更新表格数据
+                changeTableData(curimg['data']);
+            }
+        });
+        return false
+    });
+</script>
+
+</html>

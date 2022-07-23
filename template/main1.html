@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta  charset="utf-8" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
+    <link rel="shortcut icon" href="../static/favicon.ico" type="img/x.ico"  />
+    <meta charset="UTF-8">
+    <title>条码识别系统</title>
+    <style>
+        #main {
+            display: flex;
+            justify-content: center;
+            margin-top: 55px;
+        }
+        #image {
+            width: 60%;
+            margin: 5px;
+            border: 5px solid #898585;
+        }
+        #image img{
+            width:100%;
+            vertical-align: bottom;
+        }
+        #results {
+            flex-direction: column;
+            justify-content: center;
+            width: 40%;
+            margin: 5px;
+        }
+        #table_head {
+            font-size: x-large;
+            background: #cbcdcf;
+        }
+        #table_content {
+            font-size: larger;
+        }
+    </style>
+</head>
+<body>
+
+<div id="main">
+    <div id="image">
+        <img src={{image}} alt="找不到图片">
+    </div>
+    <div id="results">
+        <h1 style="text-align: center">识别结果</h1>
+        <table style="width: 100%;height: 100px;text-align: center">
+            <tr id="table_head">
+                <th id="table_head_index">序号</th>
+                <th id="table_head_type">码类型</th>
+                <th id="table_head_content">码内容</th>
+            </tr>
+        {% for item in result_lists %}
+            <tr id="table_content">
+                <td>{{item["index"]}}</td>
+                <td>{{item["type"]}}</td>
+                <td>{{item["content"]}}</td>
+            </tr>
+        {% endfor %}
+        </table>
+
+    </div>
+</div>
+
+<!--<script src="app.js"></script>-->
+</body>
+</html>
