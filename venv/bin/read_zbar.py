@@ -1,4 +1,4 @@
-#!/home/pi/Desktop/qrcode_detect/venv/bin/python
+#!/home/orangepi/Desktop/qrcode_detect/venv/bin/python3
 from __future__ import print_function
 
 import argparse
