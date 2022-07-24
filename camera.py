@@ -6,8 +6,8 @@ import cv2
 from pyzbar import pyzbar as pbar
 from ctypes import *
 
-sys.path.append("/home/pi/Desktop/qrcode_detect/MVS/Samples/armhf/Python/MvImport")
-os.environ['MVCAM_COMMON_RUNENV'] = "/home/pi/Desktop/qrcode_detect/MVS/lib"
+sys.path.append("/opt/MVS/Samples/aarch64/Python/MvImport")
+os.environ['MVCAM_COMMON_RUNENV'] = "/opt/MVS/lib"
 
 from MvCameraControl_class import * #调用了MvCameraControl_class.py文件
 

@@ -10,7 +10,6 @@ apt install -y python3.10-venv
 python3 -m venv venv
 source ./venv/bin/activate (退出虚拟环境:deactivate)
 # 在venv虚拟环境下安装相关依赖包
+sudo apt-get -y install libzbar-dev
 pip install -r requirements.txt
-# 安装MVS(包已安装，无须重新安装)
 dpkg -i ./lib/MVS-2.1.1_aarch64_20220511.deb
-mv /opt/MVS ./
