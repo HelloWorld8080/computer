@@ -13,4 +13,3 @@ source ./venv/bin/activate (退出虚拟环境:deactivate)
 sudo apt-get -y install libzbar-dev
 pip install -r requirements.txt
 dpkg -i ./lib/MVS-2.1.1_aarch64_20220511.deb
-#

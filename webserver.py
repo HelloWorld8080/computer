@@ -3,7 +3,7 @@ import json
 from flask import Flask
 from flask_cors import CORS
 from flask import request
-from util import cameraShot
+from util import cameraShot,setExportTime
 import requests
 requests.DEFAULT_RETRIES = 5  # 增加重试连接次数
 s = requests.session()
@@ -23,7 +23,8 @@ def get_result():
 def setParameter():
     exposure_time=request.args.get('exposure_time')
     exposure_value = request.args.get('exposure_value')
-    return "功能未开发"
+    setExportTime(float(exposure_time))
+    return "设置成功"
 
 @app.route('/shot')
 def shot():

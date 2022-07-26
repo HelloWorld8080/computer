@@ -1,3 +1,4 @@
+from asyncio import ReadTransport
 import sys 
 from ctypes import *
 import os
@@ -195,6 +196,17 @@ class HKCamera():
     def get_exposure_time(self):
         return self.get_Value(param_type="float_value", node_name="ExposureTime")
 
+    def setExposureAutoMode(self, exposureAutoMode = 0):
+        ret = self.camera.MV_CC_SetExposureAutoMode(exposureAutoMode)
+        if ret != 0:
+            raise Exception("设置 ExposureAutoMode 失败 ! 报错码 ret[0x%x]" % (ret)) 
+    def setExposureAutoMode(self, exposureAutoMode = 0):
+        nRet = MV_CC_SetExposureAutoMode(handle, ExposureAutoMode);
+        if nRet != 0:
+            printf("Set ExposureAutoMode fail! nRet [0x%x]\n", nRet);
+            return nRet;
+        
+    
     def get_image(self, width=None):
         """
         :param cam:     相机实例

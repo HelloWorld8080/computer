@@ -50,19 +50,19 @@
                 <form action="" id="form_table">
                     <table>
                         <tr>
-                            <td>曝光时间</td>
+                            <td>曝光度</td>
                             <td>
-                                <select name="exposure_time">
-                                    <option value="1">1s</option>
-                                    <option value="2">2s</option>
-                                    <option value="5">5s</option>
-                                    <option value="10">10s</option>
+                                <select name="exposure_value">
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="5">5</option>
+                                    <option value="10">10</option>
                                 </select>
                             </td>
                         </tr>
                         <tr>
-                            <td>曝光度</td>
-                            <td><input id="range" onchange="change()" type="range" min="0" max="100" step="5" name="exposure_value" value="10"/><span id="value">10</span></td>
+                            <td>曝光时间</td>
+                            <td><input id="range" onchange="change()" type="range" min="0" max="20000" step="1000" name="exposure_time" value="5000"/><span id="value">5</span>ms</td>
                         </tr>
                     </table>
                     <button type="button" id="submit">提交</button>
@@ -88,7 +88,7 @@
     let oldimg = {}
     oldimgNode = null
     curimgNode = null
-    const serverUrl = "http://192.168.1.100:5000"
+    const serverUrl = "http://192.168.1.102:5000"
     window.onload = function () {
         console.log("fdfd");
 
@@ -161,6 +161,7 @@
         const img = center.querySelector("div").querySelector("img");
         img.src = data;
     }
+    
 
     // 渲染表格数据，参数为数据数组
     function changeTableData(arr) {
@@ -183,7 +184,7 @@
     }
     function change(){
         let value =  document.getElementById('range').value;
-        document.getElementById('value').innerHTML = value
+        document.getElementById('value').innerHTML = parseInt(value/1000)
     }
 
     // console.log('fdfdfdsf')

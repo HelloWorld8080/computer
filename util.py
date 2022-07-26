@@ -21,6 +21,8 @@ def cameraShot():
     # cap.release()
     print("拍照完成")
     return os.path.join(pathdir, "image_result.json"), 'img_' + str(int(now))
+def setExportTime(exportTime):
+    cap.set_exposure_time(exportTime)
 def decode(img_path,pathdir,key):
     image = cv2.imread(img_path)
     barcodes = pbar.decode(image)
