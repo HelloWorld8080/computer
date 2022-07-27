@@ -60,10 +60,19 @@
                                 </select>
                             </td>
                         </tr>
+                        
+                        <tr>
+                            <td>自动曝光</td>
+                            <td>
+                                <input type="checkbox"  name="exposureAuto" class="switch">
+                            </td>
+                        </tr>
+                        
                         <tr>
                             <td>曝光时间</td>
                             <td><input id="range" onchange="change()" type="range" min="0" max="20000" step="1000" name="exposure_time" value="5000"/><span id="value">5</span>ms</td>
                         </tr>
+
                     </table>
                     <button type="button" id="submit">提交</button>
                 </form>
@@ -186,13 +195,28 @@
         let value =  document.getElementById('range').value;
         document.getElementById('value').innerHTML = parseInt(value/1000)
     }
-
+    //为jquery.serializeArray()解决radio,checkbox未选中时没有序列化的问题
+    $.fn.ghostsf_serialize = function () {
+        var a = this.serializeArray();
+        var $radio = $('input[type=radio],input[type=checkbox]', this);
+        var temp = {};
+        $.each($radio, function () {
+            if (!temp.hasOwnProperty(this.name)) {
+                if ($("input[name='" + this.name + "']:checked").length == 0) {
+                    temp[this.name] = "off";
+                    a.push({name: this.name, value: "off"});
+                }
+            }
+        });
+        //console.log(a);
+        return jQuery.param(a);
+    };
     // console.log('fdfdfdsf')
     $("#submit").click(function (e) {
-        console.log("submittableData", $('#form_table').serialize())
+        console.log("submittableData", $('#form_table').ghostsf_serialize())
         $.ajax({
             type: "get",
-            url: serverUrl + "/setParameter?" + $('#form_table').serialize(),
+            url: serverUrl + "/setParameter?" + $('#form_table').ghostsf_serialize(),
             success: function(data){
                 alert(data);
             }

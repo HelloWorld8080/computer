@@ -196,16 +196,19 @@ class HKCamera():
     def get_exposure_time(self):
         return self.get_Value(param_type="float_value", node_name="ExposureTime")
 
-    def setExposureAutoMode(self, exposureAutoMode = 0):
-        ret = self.camera.MV_CC_SetExposureAutoMode(exposureAutoMode)
+    def usetExposureAutoMode(self, exposureAutoMode = 0):
+        ret = self.camera.MV_CC_SetExposureAuto(exposureAutoMode)
         if ret != 0:
             raise Exception("设置 ExposureAutoMode 失败 ! 报错码 ret[0x%x]" % (ret)) 
+    #设置增益
+    def usetGain(self, gain):
+        self.set_Value(param_type="float_value", node_name="Gain", node_value=gain)
+    #开启自动曝光模式
     def setExposureAutoMode(self, exposureAutoMode = 0):
-        nRet = MV_CC_SetExposureAutoMode(handle, ExposureAutoMode);
+        nRet = self.camera.MV_CC_SetExposureAuto(exposureAutoMode)
         if nRet != 0:
-            printf("Set ExposureAutoMode fail! nRet [0x%x]\n", nRet);
-            return nRet;
-        
+            print("Set ExposureAutoMode fail! nRet [0x%x]\n", nRet)
+            return nRet
     
     def get_image(self, width=None):
         """
@@ -225,6 +228,7 @@ class HKCamera():
 
     def show_runtime_info(self, image):
         exp_time = self.get_exposure_time()
+        exp_auto = self.getExposureAutoMode()
         cv2.putText(image, ("exposure time = %1.1fms" % (exp_time * 0.001)), (20, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.5, 255, 1)
-
+        cv2.putText(image, ("ExposureAutoMode= %d" % (exp_auto)), (20, 80), cv2.FONT_HERSHEY_SIMPLEX, 0.5, 255, 1)
 cap = HKCamera()

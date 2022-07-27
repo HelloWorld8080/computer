@@ -214,20 +214,29 @@ class HKCamera():
         else:
             return None
 
+    def getExposureAutoMode(self):
+        nRet = self.camera.MV_CC_GetExposureAuto()
+        if nRet != 0:
+            raise Exception("失败 getExposureAutoMode! 报错码 ret[0x%x]" % (nRet))
     def show_runtime_info(self, image):
         exp_time = self.get_exposure_time()
+        # exp_auto = self.getExposureAutoMode()
         cv2.putText(image, ("exposure time = %1.1fms" % (exp_time * 0.001)), (20, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.5, 255, 1)
+        # cv2.putText(image, ("ExposureAutoMode= %d" % (exp_auto)), (20, 80), cv2.FONT_HERSHEY_SIMPLEX, 0.5, 255, 1)
 
 if __name__ == '__main__':
    
     camera = HKCamera()
     try:
-        camera.set_exposure_time(5000)
+        camera.set_exposure_time(20000)
         while True:
          image = camera.get_image(width=800)
+         blur_img = cv2.GaussianBlur(image, (0, 0), 5)
+         usm = cv2.addWeighted(image, 1.5, blur_img, -0.5, 0)
          if image is not None:
              camera.show_runtime_info(image)
              cv2.imshow("", image)
+             cv2.imshow("usm", usm)
          key = cv2.waitKey(50) & 0xFF
          if key == ord('e') or key == ord('E'):
              cv2.destroyAllWindows()

@@ -161,87 +161,47 @@ div {
 .right>.form form{
     margin: 50px 3px;
 }
-.testswitch {
+/* Switch开关样式 */
+input[type='checkbox']{
+    background: rgb(103, 19, 206);
+}
+input[type='checkbox'].switch {
+    outline: none;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
     position: relative;
-    float: left;
-    width: 65px;
-    margin: 0;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
+    width: 40px;
+    height: 20px;
+    background: #ccc;
+    border-radius: 10px;
+    transition: border-color .3s, background-color .3s;
 }
 
-.testswitch-checkbox {
-    display: none;
-}
-
-.testswitch-label {
-    display: block;
-    overflow: hidden;
-    cursor: pointer;
-    border: 2px solid #fff;
-    border-radius: 20px;
-}
-
-.testswitch-inner {
-    display: block;
-    width: 200%;
-    margin-left: -100%;
-    transition: margin 0.3s ease-in 0s;
-}
-
-.testswitch-inner::before,
-.testswitch-inner::after {
-    display: block;
-    float: right;
-    width: 50%;
-    height: 30px;
-    padding: 0;
-    line-height: 30px;
-    font-size: 14px;
-    color: white;
-    font-family:
-        Trebuchet, Arial, sans-serif;
-    font-weight: bold;
-    box-sizing: border-box;
-}
-
-.testswitch-inner::after {
+input[type='checkbox'].switch::after {
     content: '';
-    padding-left: 10px;
-    background-color: #00e500;
-    color: #FFFFFF;
-}
-
-.testswitch-inner::before {
-    content: '';
-    padding-right: 10px;
-    background-color: red;
-    color: #999999;
-    text-align: right;
-}
-
-.testswitch-switch {
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0, 0, 2px, #999;
+    transition: .4s;
+    top: 2px;
     position: absolute;
-    display: block;
-    width: 22px;
-    height: 22px;
-    margin: 4px;
-    background: #FFFFFF;
-    top: 0;
-    bottom: 0;
-    right: 29px;
-    border: 2px solid #999999;
-    border-radius: 20px;
-    transition: all 0.3s ease-in 0s;
+    left: 2px;
 }
 
-.testswitch-checkbox:checked+.testswitch-label .testswitch-inner {
-    margin-left: 0;
+input[type='checkbox'].switch:checked {
+    background: rgb(19, 206, 102);
 }
 
-.testswitch-checkbox:checked+.testswitch-label .testswitch-switch {
-    right: 0px;
+
+input[type='checkbox'].switch:checked::after {
+    content: '';
+    position: absolute;
+    left: 55%;
+    top: 2px;
 }
 
 .form td {
@@ -256,7 +216,6 @@ div {
 }
 
 .form td>input {
-    border: 2px solid #000;
     line-height: 28px;
 }
 
@@ -267,55 +226,4 @@ div {
     border: none;
     margin-left: 50%;
     transform: translateX(-50%);
-}
-
-
-
-.switch-btn {
-    cursor: pointer;
-    width: 45px;
-    height: 28px;
-    position: relative;
-    border: 1px solid #dfdfdf;
-    background-color: #fdfdfd;
-    box-shadow: #dfdfdf 0 0 0 0 inset;
-    border-radius: 15px;
-    background-clip: content-box;
-    display: inline-block;
-    -webkit-appearance: none;
-    user-select: none;
-    outline: none;
-}
-.switch-btn:before {
-    content: '';
-    width: 25px;
-    height: 25px;
-    position: absolute;
-    top: 0;
-    left: 0;
-    border-radius: 20px;
-    background-color: #fff;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, .4);
-}
-.switch-btn:checked {
-    border-color: #56b0d4;
-    box-shadow: #56b0d4 0 0 0 16px inset;
-    background-color: #56b0d4;
-}
-.switch-btn:checked:before {
-    left: 18px;
-}
-.switch-btn.switch-btn-animbg {
-    transition: background-color ease .4s;
-}
-.switch-btn.switch-btn-animbg:before {
-    transition: left .3s;
-}
-.switch-btn.switch-btn-animbg:checked {
-    box-shadow: #dfdfdf 0 0 0 0 inset;
-    background-color: #56b0d4;
-    transition: border-color .4s, background-color ease .4s;
-}
-.switch-btn.switch-btn-animbg:checked:before {
-    transition: left .3s;
 }

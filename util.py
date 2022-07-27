@@ -10,6 +10,8 @@ import time
 def cameraShot():
     # ret, frame = cap.read()
     frame = cap.get_image(width=800)
+    blur_img = cv2.GaussianBlur(frame, (0, 0), 5)
+    frame = cv2.addWeighted(frame, 1.5, blur_img, -0.5, 0)
     now = time.time()
     key = 'img_' + str(int(now))
     pathdir = os.path.join('result', key)
@@ -23,6 +25,11 @@ def cameraShot():
     return os.path.join(pathdir, "image_result.json"), 'img_' + str(int(now))
 def setExportTime(exportTime):
     cap.set_exposure_time(exportTime)
+def setExposureAutoMode(swich):
+    cap.usetExposureAutoMode(swich)
+
+def setGain(swich = 0):
+    cap.usetGain(swich)
 def decode(img_path,pathdir,key):
     image = cv2.imread(img_path)
     barcodes = pbar.decode(image)
