@@ -3,7 +3,7 @@ import json
 from flask import Flask
 from flask_cors import CORS
 from flask import request
-from util import cameraShot,setExportTime,setExposureAutoMode,setGain
+from camera import cap
 import requests
 requests.DEFAULT_RETRIES = 5  # 增加重试连接次数
 s = requests.session()
@@ -19,15 +19,32 @@ def get_result():
             data.append(json.load(fr))
     return json.dumps(data)
 
+@app.route('/getParameter')
+def getParameter():
+
+    data = {
+        # "exposureAutoMode":cap.getExposureAutoMode(),
+        "exposureTime": cap.getExposureTime(),
+        "gainMode": cap.getGainMode(),
+        "gain": cap.getGain(),
+        "Sharpness":cap.getSharpness()
+    }
+    return json.dumps(data)
+    
 @app.route('/setParameter')
 def setParameter():
-    exposure_time=request.args.get('exposure_time')
-    exposure_value = request.args.get('exposure_value')
-    exposureAuto= request.args.get('exposureAuto')
-    setExportTime(float(exposure_time))
-    exposureAuto = 1 if exposureAuto =="on" else 0
-    setExposureAutoMode(exposureAuto)
-    setGain()
+    # exposureAutoMode= request.args.get('exposureAutoMode')
+    exposure_time=request.args.get('exposureTime')
+    gainMode= request.args.get('gainMode')
+    gain = request.args.get('gain')
+    sharpness = request.args.get('sharpness')
+    # cap.setExposureAutoMode(int(exposureAutoMode))
+    cap.setSharpness(int(sharpness))
+    # if cap.getExposureAutoMode() !=0 or cap.getExposureAutoMode() !=1: 
+    #     cap.setExposureTime(float(exposure_time))
+    # cap.setGainMode(exposureAutoMode)
+    # if cap.getExposureAutoMode() !=0 or cap.getExposureAutoMode() !=1:
+    #     cap.setGain(float(gain))
     return "设置成功"
 
 @app.route('/shot')

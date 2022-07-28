@@ -228,10 +228,12 @@ if __name__ == '__main__':
    
     camera = HKCamera()
     try:
-        camera.set_exposure_time(20000)
+        camera.set_exposure_time(5000)
         while True:
          image = camera.get_image(width=800)
          blur_img = cv2.GaussianBlur(image, (0, 0), 5)
+         usm = cv2.addWeighted(image, 1.5, blur_img, -0.5, 0)
+         blur_img = cv2.GaussianBlur(usm, (0, 0), 5)
          usm = cv2.addWeighted(image, 1.5, blur_img, -0.5, 0)
          if image is not None:
              camera.show_runtime_info(image)

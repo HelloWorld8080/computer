@@ -1,16 +1,12 @@
-from asyncio import ReadTransport
-import sys 
-from ctypes import *
-import os
 import numpy as np
 import cv2
-from pyzbar import pyzbar as pbar
-from ctypes import *
-
-sys.path.append("/opt/MVS/Samples/aarch64/Python/MvImport")
-os.environ['MVCAM_COMMON_RUNENV'] = "/opt/MVS/lib"
-
-from MvCameraControl_class import * #调用了MvCameraControl_class.py文件
+import util
+import time
+import sys
+import os
+# sys.path.append("/opt/MVS/Samples/aarch64/Python/MvImport")
+# os.environ['MVCAM_COMMON_RUNENV'] = "/opt/MVS/lib"
+from MVS.MvCameraControl_class import * #调用了MvCameraControl_class.py文件
 
 
 class HKCamera():
@@ -113,7 +109,7 @@ class HKCamera():
         if param_type == "int_value":
             stParam = MVCC_INTVALUE_EX()
             memset(byref(stParam), 0, sizeof(MVCC_INTVALUE_EX))
-            ret = self.camera.MV_CC_GetIntValueEx(node_name, stParam)
+            ret = self.camera.MV_CC_GetIntValue(node_name, stParam)
             if ret != 0:
                 raise Exception("获取 int 型数据 %s 失败 ! 报错码 ret[0x%x]" % (node_name, ret))
             return stParam.nCurValue
@@ -166,7 +162,7 @@ class HKCamera():
         :return:
         """
         if param_type == "int_value":
-            ret = self.camera.MV_CC_SetIntValueEx(node_name, int(node_value))
+            ret = self.camera.MV_CC_SetIntValue(node_name, int(node_value))
             if ret != 0:
                 raise Exception("设置 int 型数据节点 %s 失败 ! 报错码 ret[0x%x]" % (node_name, ret))
 
@@ -190,26 +186,63 @@ class HKCamera():
             if ret != 0:
                 raise Exception("设置 string 型数据节点 %s 失败 ! 报错码 ret[0x%x]" % (node_name, ret))
 
-    def set_exposure_time(self, exp_time):
-        self.set_Value(param_type="float_value", node_name="ExposureTime", node_value=exp_time)
-
-    def get_exposure_time(self):
-        return self.get_Value(param_type="float_value", node_name="ExposureTime")
-
-    def usetExposureAutoMode(self, exposureAutoMode = 0):
-        ret = self.camera.MV_CC_SetExposureAuto(exposureAutoMode)
-        if ret != 0:
-            raise Exception("设置 ExposureAutoMode 失败 ! 报错码 ret[0x%x]" % (ret)) 
-    #设置增益
-    def usetGain(self, gain):
-        self.set_Value(param_type="float_value", node_name="Gain", node_value=gain)
     #开启自动曝光模式
-    def setExposureAutoMode(self, exposureAutoMode = 0):
-        nRet = self.camera.MV_CC_SetExposureAuto(exposureAutoMode)
+    # def setExposureAutoMode(self, node_value = 0):
+    #     nRet = self.camera.MV_CC_SetExposureAutoMode(node_value)
+    #     if nRet != 0:
+    #         raise Exception("Set ExposureAutoMode fail! nRet [0x%x]\n", nRet)
+    # def getExposureAutoMode(self):
+    #     return self.camera.MV_CC_GetExposureAutoMode()
+    def setExposureAutoMode(self, node_value = 0):
+        self.set_Value("enum_value",node_name="ExposureAuto",node_value=node_value)
+    def getExposureAutoMode(self):
+        return self.get_Value("enum_value",node_name="ExposureAuto")
+    def setExposureTime(self, exp_time):
+        self.set_Value(param_type="float_value", node_name="ExposureTime", node_value=exp_time)
+    def getExposureTime(self):
+        return self.get_Value("float_value","ExposureTime")
+
+    #设置增益模式
+    def setGainMode(self,value):
+        self.set_Value(param_type="int_value", node_name="GainMode", node_value=value)
+    def getGainMode(self):
+        return self.camera.MV_CC_GetGainMode()
+    #设置增益
+    def setGain(self, gain):
+        self.camera.set_Value(param_type="float_value", node_name="Gain", node_value=gain)
+    def getGain(self):
+        return self.get_Value("float_value","Gain")
+
+    # def setGain(self, gain):
+    #     self.set_Value(param_type="float_value", node_name="Gain", node_value=gain)
+    # def getGain(self):
+    #     return self.get_Value(param_type="int_value", node_name="Gain")
+
+    #设置rui
+    def setSharpness(self, node_value):
+        nRet = self.camera.MV_CC_SetSharpness(node_value)
         if nRet != 0:
-            print("Set ExposureAutoMode fail! nRet [0x%x]\n", nRet)
-            return nRet
-    
+            raise Exception("Set Sharpness fail! nRet [0x%x]\n", nRet)
+    def getSharpness(self):
+        return self.camera.MV_CC_GetSharpness()
+
+    def cameraShot(self):
+        # ret, frame = cap.read()
+        frame = self.camera.get_image(width=800)
+        blur_img = cv2.GaussianBlur(frame, (0, 0), 5)
+        frame = cv2.addWeighted(frame, 1.5, blur_img, -0.5, 0)
+        now = time.time()
+        key = 'img_' + str(int(now))
+        pathdir = os.path.join('result', key)
+        if os.path.exists(pathdir) == False:
+            os.makedirs(pathdir)
+        img_path = os.path.join(pathdir, 'image.jpg')
+        cv2.imwrite(img_path, frame)  # 保存路径
+        util.decode(img_path, pathdir, key)
+        # cap.release()
+        print("拍照完成")
+        return os.path.join(pathdir, "image_result.json"), 'img_' + str(int(now))
+
     def get_image(self, width=None):
         """
         :param cam:     相机实例
@@ -225,10 +258,4 @@ class HKCamera():
             return image
         else:
             return None
-
-    def show_runtime_info(self, image):
-        exp_time = self.get_exposure_time()
-        exp_auto = self.getExposureAutoMode()
-        cv2.putText(image, ("exposure time = %1.1fms" % (exp_time * 0.001)), (20, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.5, 255, 1)
-        cv2.putText(image, ("ExposureAutoMode= %d" % (exp_auto)), (20, 80), cv2.FONT_HERSHEY_SIMPLEX, 0.5, 255, 1)
 cap = HKCamera()

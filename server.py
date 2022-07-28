@@ -16,7 +16,6 @@ try:
     while True:
         swich = GPIO.input(5)
         print(swich)
-        
         if swich == 0:
             print("已检测到物体")
             time.sleep(1)

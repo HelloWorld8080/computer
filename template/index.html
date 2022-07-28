@@ -49,29 +49,46 @@
                 <h2>相机设置</h2>
                 <form action="" id="form_table">
                     <table>
-                        <tr>
-                            <td>曝光度</td>
-                            <td>
-                                <select name="exposure_value">
-                                    <option value="1">1</option>
-                                    <option value="2">2</option>
-                                    <option value="5">5</option>
-                                    <option value="10">10</option>
-                                </select>
-                            </td>
-                        </tr>
-                        
-                        <tr>
+                        <!-- <tr>
                             <td>自动曝光</td>
                             <td>
                                 <input type="checkbox"  name="exposureAuto" class="switch">
                             </td>
+                        </tr> -->
+                        <tr>
+                            <td>自动曝光</td>
+                            <td>
+                                <select name="exposureAuto">
+                                    <option value="0">关闭</option>
+                                    <option value="1">一次</option>
+                                    <option value="2">连续</option>
+                                </select>
+                            </td>
                         </tr>
-                        
                         <tr>
                             <td>曝光时间</td>
-                            <td><input id="range" onchange="change()" type="range" min="0" max="20000" step="1000" name="exposure_time" value="5000"/><span id="value">5</span>ms</td>
+                            <td>
+                                <input onchange="change(this)" type="range" min="0" max="9999500" step="1" name="exposureTime"/><span>5000.00</span>us
+                            </td>
                         </tr>
+                        <tr>
+                            <td>自动增益</td>
+                            <td>
+                                <select name="exposure_value">
+                                    <option value="0">关闭</option>
+                                    <option value="1">一次</option>
+                                    <option value="2">连续</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>增益</td>
+                            <td>
+                                <input onchange="change(this)" type="range" min="0" max="23" step="1" name="exposure_value"/><span>0.7</span>dB
+                            </td>
+                        </tr>
+                        
+        
 
                     </table>
                     <button type="button" id="submit">提交</button>
@@ -124,6 +141,15 @@
                 render()
                 curimgNode = document.querySelector('.picture-list').firstChild
 
+            }
+        });
+
+        $.ajax({
+            type: "get",
+            url: serverUrl+"/getParameter",
+            dataType: "json",
+            success: function (data) {
+               console.log(data)
             }
         });
     };
@@ -191,9 +217,12 @@
             table.appendChild(tr)
         });
     }
-    function change(){
-        let value =  document.getElementById('range').value;
-        document.getElementById('value').innerHTML = parseInt(value/1000)
+    function change(thisElement){
+        let value =  thisElement.value;
+        if(thisElement.name=="exposure_value")
+            thisElement.nextElementSibling.innerHTML = parseInt(value)
+        else if(thisElement.name=="exposure_time")
+            thisElement.nextElementSibling.innerHTML = parseInt(value/1000)
     }
     //为jquery.serializeArray()解决radio,checkbox未选中时没有序列化的问题
     $.fn.ghostsf_serialize = function () {
