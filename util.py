@@ -5,6 +5,9 @@ from pyzbar import pyzbar as pbar
 from PIL import Image, ImageDraw, ImageFont
 import json
 
+def uhasDetectCode(frame):
+    return str(len(pbar.decode(frame)))
+
 def decode(img_path,pathdir,key):
     image = cv2.imread(img_path)
     barcodes = pbar.decode(image)

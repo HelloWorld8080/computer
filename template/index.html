@@ -55,7 +55,7 @@
                                 <input type="checkbox"  name="exposureAuto" class="switch">
                             </td>
                         </tr> -->
-                        <tr>
+                        <!-- <tr>
                             <td>自动曝光</td>
                             <td>
                                 <select name="exposureAuto">
@@ -64,14 +64,14 @@
                                     <option value="2">连续</option>
                                 </select>
                             </td>
-                        </tr>
+                        </tr> -->
                         <tr>
-                            <td>曝光时间</td>
+                            <td>曝光时间(us)</td>
                             <td>
-                                <input onchange="change(this)" type="range" min="0" max="9999500" step="1" name="exposureTime"/><span>5000.00</span>us
+                                <input  type="input" name="exposureTime" value="5000" placeholder="0-1000000"/>
                             </td>
                         </tr>
-                        <tr>
+                        <!-- <tr>
                             <td>自动增益</td>
                             <td>
                                 <select name="exposure_value">
@@ -80,15 +80,25 @@
                                     <option value="2">连续</option>
                                 </select>
                             </td>
-                        </tr>
+                        </tr> -->
                         <tr>
                             <td>增益</td>
                             <td>
-                                <input onchange="change(this)" type="range" min="0" max="23" step="1" name="exposure_value"/><span>0.7</span>dB
+                                <input onchange="change(this)" type="range" min="0" max="230" step="1" name="gain" value="7"/><span>0.7</span>dB
                             </td>
                         </tr>
-                        
-        
+                        <tr>
+                            <td>锐度</td>
+                            <td>
+                                <input onchange="change(this)" type="range" min="0" max="100" step="1" name="sharpness" value="100"/><span>100</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>线路防抖时间（us）</td>
+                            <td>
+                                <input  type="input" name="lineDebouncerTime" value="50" placeholder="0-1000000"/>
+                            </td>
+                        </tr>
 
                     </table>
                     <button type="button" id="submit">提交</button>
@@ -144,14 +154,14 @@
             }
         });
 
-        $.ajax({
-            type: "get",
-            url: serverUrl+"/getParameter",
-            dataType: "json",
-            success: function (data) {
-               console.log(data)
-            }
-        });
+        // $.ajax({
+        //     type: "get",
+        //     url: serverUrl+"/getParameter",
+        //     dataType: "json",
+        //     success: function (data) {
+        //        console.log(data)
+        //     }
+        // });
     };
     function render(){
         for (let item of tableData) {
@@ -219,10 +229,12 @@
     }
     function change(thisElement){
         let value =  thisElement.value;
-        if(thisElement.name=="exposure_value")
-            thisElement.nextElementSibling.innerHTML = parseInt(value)
-        else if(thisElement.name=="exposure_time")
-            thisElement.nextElementSibling.innerHTML = parseInt(value/1000)
+        if(thisElement.name=="gain")
+            thisElement.nextElementSibling.innerHTML = value/10.0
+        else if(thisElement.name=="exposureTime")
+            thisElement.nextElementSibling.innerHTML = value
+        else if(thisElement.name=="sharpness")
+            thisElement.nextElementSibling.innerHTML = value
     }
     //为jquery.serializeArray()解决radio,checkbox未选中时没有序列化的问题
     $.fn.ghostsf_serialize = function () {

@@ -100,7 +100,7 @@ div {
 }
 
 .center>div {
-    width: calc(100% - 20px);
+    width: calc(100% - 100px);
     border: 6px solid #f0f0f0;
 }
 .right{

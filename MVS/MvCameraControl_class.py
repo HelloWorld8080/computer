@@ -12,7 +12,7 @@ from .MvCameraControl_header import *
 from .MvErrorDefine_const import *
 from .PixelType_const import *
 from .PixelType_header import *
-
+os.environ['MVCAM_COMMON_RUNENV'] = "/opt/MVS/lib"
 MvCamCtrldll = ctypes.cdll.LoadLibrary(os.getenv('MVCAM_COMMON_RUNENV') + "/aarch64/libMvCameraControl.so")
 
 # 用于回调函数传入相机实例
@@ -300,8 +300,16 @@ class MvCamera():
         if ret != 0:
             raise Exception("获取ExposureAutoMode失败 ! 报错码 ret[0x%x]" % (ret))
         return stEnumValue.nCurValue
-    
-    
+    def MV_CC_GetImageInfo(self,pstInfo):
+        MvCamCtrldll.MV_CC_GetImageInfo.argtype = (c_void_p,c_void_p)
+        MvCamCtrldll.MV_CC_GetImageInfo.restype = c_uint
+        return MvCamCtrldll.MV_CC_GetImageInfo(self.handle,byref(pstInfo))
+
+    # def MV_CC_GetAllMatchInfo(self,pstInfo):
+    #     MvCamCtrldll.MV_CC_GetAllMatchInfo.argtype = (c_void_p,c_void_p)
+    #     MvCamCtrldll.MV_CC_GetAllMatchInfo.restype = c_uint
+    #     return MvCamCtrldll.MV_CC_GetAllMatchInfo(self.handle,byref(pstInfo))
+
     def MV_CC_SetExposureAutoMode(self, nValue):
         MvCamCtrldll.MV_CC_SetExposureAutoMode.argtype = (c_void_p, c_uint32)
         MvCamCtrldll.MV_CC_SetExposureAutoMode.restype = c_uint
@@ -332,7 +340,8 @@ class MvCamera():
             raise Exception("获取 Sharpness失败 ! 报错码 ret[0x%x]" % (ret))
         return stParam.nCurValue
     def MV_CC_SetSharpness(self,nValue):
-        MvCamCtrldll.MV_CC_SetSharpness.argtype = (c_void_p, c_uint32)
+        MvCamCtrldll.MV_CC_SetSharpness.argtype = (c_void_p, c_uint)
         MvCamCtrldll.MV_CC_SetSharpness.restype = c_uint
         # C原型:int MV_CC_SetEnumValueByString(void* handle,char* strKey,char* sValue)
-        return MvCamCtrldll.MV_CC_SetSharpness(self.handle, c_uint32(nValue))
+        return MvCamCtrldll.MV_CC_SetSharpness(self.handle, c_uint(nValue))
+    

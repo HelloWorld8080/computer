@@ -1,6 +1,6 @@
 import numpy as np
 import cv2
-import util
+from util import decode,uhasDetectCode
 import time
 import sys
 import os
@@ -82,6 +82,11 @@ class HKCamera():
         if ret != 0:
             # if ret != 2147484163: 
             raise Exception("open device fail! ret[0x%x]" % ret)
+
+        ret = camera.MV_CC_FeatureLoad("./MV-CA050-12UM_K27297324.mfs")
+        if ret != 0:
+            raise Exception("FeatureLoad fail! ret[0x%x]" % ret)
+            
         return camera
 
     def start_camera(self):
@@ -99,6 +104,36 @@ class HKCamera():
 
         self.camera.MV_CC_StartGrabbing()
 
+    def get_image(self, width=None):
+        """
+        :param cam:     相机实例
+        :active_way:主动取流方式的不同方法 分别是（getImagebuffer）（getoneframetimeout）
+        :return:
+        """
+        ret = self.camera.MV_CC_GetOneFrameTimeout(self.pData, self.nDataSize, self.stFrameInfo, 1000)
+        if ret == 0:
+            image = np.asarray(self.pData).reshape((self.stFrameInfo.nHeight, self.stFrameInfo.nWidth))
+            # cv2.imwrite("./image.bmp", image) 
+            return image  
+        else:
+            return None
+    def cameraShot(self):
+        # ret, frame = cap.read()
+        frame = self.get_image()
+        # cv2.imwrite("./image.bmp", frame) 
+        now = time.time()
+        key = 'img_' + str(int(now))
+        pathdir = os.path.join('result', key)
+        if os.path.exists(pathdir) == False:
+            os.makedirs(pathdir)
+        img_path = os.path.join(pathdir, 'image.bmp')
+        cv2.imwrite(img_path, frame)  # 保存路径
+        decode(img_path, pathdir, key)
+        print("拍照完成")
+        return os.path.join(pathdir, "image_result.json"), 'img_' + str(int(now))
+    def hasDetectCode(self):
+        frame = self.get_image()
+        return uhasDetectCode(frame)
     def get_Value(self, param_type, node_name):
         """
         :param cam:            相机实例
@@ -148,7 +183,7 @@ class HKCamera():
         else:
             return None
 
-    def set_Value(self, param_type, node_name, node_value):
+    def set_Value(self, param_type, node_name, node_value = 0):
         """
         :param cam:               相机实例
         :param param_type:        需要设置的节点值得类型
@@ -185,7 +220,10 @@ class HKCamera():
             ret = self.camera.MV_CC_SetStringValue(node_name, str(node_value))
             if ret != 0:
                 raise Exception("设置 string 型数据节点 %s 失败 ! 报错码 ret[0x%x]" % (node_name, ret))
-
+        elif param_type == "command_value":
+            ret = self.camera.MV_CC_SetCommandValue(node_name)
+        if ret != 0:
+            raise Exception("设置 Command 型数据节点 %s 失败 ! 报错码 ret[0x%x]" % (node_name, ret))
     #开启自动曝光模式
     # def setExposureAutoMode(self, node_value = 0):
     #     nRet = self.camera.MV_CC_SetExposureAutoMode(node_value)
@@ -193,9 +231,9 @@ class HKCamera():
     #         raise Exception("Set ExposureAutoMode fail! nRet [0x%x]\n", nRet)
     # def getExposureAutoMode(self):
     #     return self.camera.MV_CC_GetExposureAutoMode()
-    def setExposureAutoMode(self, node_value = 0):
+    def setExposureAuto(self, node_value = 0):
         self.set_Value("enum_value",node_name="ExposureAuto",node_value=node_value)
-    def getExposureAutoMode(self):
+    def getExposureAuto(self):
         return self.get_Value("enum_value",node_name="ExposureAuto")
     def setExposureTime(self, exp_time):
         self.set_Value(param_type="float_value", node_name="ExposureTime", node_value=exp_time)
@@ -209,53 +247,28 @@ class HKCamera():
         return self.camera.MV_CC_GetGainMode()
     #设置增益
     def setGain(self, gain):
-        self.camera.set_Value(param_type="float_value", node_name="Gain", node_value=gain)
+        self.set_Value(param_type="float_value", node_name="Gain", node_value=gain)
     def getGain(self):
         return self.get_Value("float_value","Gain")
 
-    # def setGain(self, gain):
-    #     self.set_Value(param_type="float_value", node_name="Gain", node_value=gain)
-    # def getGain(self):
-    #     return self.get_Value(param_type="int_value", node_name="Gain")
+    def setSharpnessEnable(self, node_value):
+        self.set_Value("bool_value","SharpnessEnable",node_value)
+    def getSharpnessEnable(self):
+        return self.get_Value("bool_value","SharpnessEnable") 
 
-    #设置rui
+    #设置锐度
+    # def setSharpness(self, node_value):
+    #     nRet = self.camera.MV_CC_SetSharpness(node_value)
+    #     if nRet != 0:
+    #         raise Exception("Set Sharpness fail! nRet [0x%x]\n", nRet)
+    # def getSharpness(self):
+    #     return self.camera.MV_CC_GetSharpness() 
     def setSharpness(self, node_value):
-        nRet = self.camera.MV_CC_SetSharpness(node_value)
-        if nRet != 0:
-            raise Exception("Set Sharpness fail! nRet [0x%x]\n", nRet)
+        self.set_Value("int_value","Sharpness",node_value)
     def getSharpness(self):
-        return self.camera.MV_CC_GetSharpness()
+        print(self.camera)
+        return self.get_Value("int_value","Sharpness") 
+    def setLineDebouncerTime(self, node_value):
+        self.set_Value("int_value","LineDebouncerTime",node_value)
 
-    def cameraShot(self):
-        # ret, frame = cap.read()
-        frame = self.camera.get_image(width=800)
-        blur_img = cv2.GaussianBlur(frame, (0, 0), 5)
-        frame = cv2.addWeighted(frame, 1.5, blur_img, -0.5, 0)
-        now = time.time()
-        key = 'img_' + str(int(now))
-        pathdir = os.path.join('result', key)
-        if os.path.exists(pathdir) == False:
-            os.makedirs(pathdir)
-        img_path = os.path.join(pathdir, 'image.jpg')
-        cv2.imwrite(img_path, frame)  # 保存路径
-        util.decode(img_path, pathdir, key)
-        # cap.release()
-        print("拍照完成")
-        return os.path.join(pathdir, "image_result.json"), 'img_' + str(int(now))
-
-    def get_image(self, width=None):
-        """
-        :param cam:     相机实例
-        :active_way:主动取流方式的不同方法 分别是（getImagebuffer）（getoneframetimeout）
-        :return:
-        """
-        ret = self.camera.MV_CC_GetOneFrameTimeout(self.pData, self.nDataSize, self.stFrameInfo, 1000)
-        if ret == 0:
-            image = np.asarray(self.pData).reshape((self.stFrameInfo.nHeight, self.stFrameInfo.nWidth))
-            if width is not None:
-                image = cv2.resize(image, (width, int(self.stFrameInfo.nHeight * width / self.stFrameInfo.nWidth)))
-                pass
-            return image
-        else:
-            return None
 cap = HKCamera()
