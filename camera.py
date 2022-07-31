@@ -130,7 +130,7 @@ class HKCamera():
         cv2.imwrite(img_path, frame)  # 保存路径
         decode(img_path, pathdir, key)
         print("拍照完成")
-        return os.path.join(pathdir, "image_result.json"), 'img_' + str(int(now))
+        return os.path.join(pathdir, "image_result.json")
     def hasDetectCode(self):
         frame = self.get_image()
         return uhasDetectCode(frame)
@@ -142,8 +142,11 @@ class HKCamera():
         :return:               节点值
         """
         if param_type == "int_value":
-            stParam = MVCC_INTVALUE_EX()
-            memset(byref(stParam), 0, sizeof(MVCC_INTVALUE_EX))
+            stParam = MVCC_INTVALUE() if node_name=="Sharpness" else MVCC_INTVALUE_EX()
+            if node_name=="Sharpness":
+                memset(byref(stParam), 0, sizeof(MVCC_INTVALUE))
+            else:
+                memset(byref(stParam), 0, sizeof(MVCC_INTVALUE_EX))
             ret = self.camera.MV_CC_GetIntValue(node_name, stParam)
             if ret != 0:
                 raise Exception("获取 int 型数据 %s 失败 ! 报错码 ret[0x%x]" % (node_name, ret))
@@ -231,38 +234,31 @@ class HKCamera():
     #         raise Exception("Set ExposureAutoMode fail! nRet [0x%x]\n", nRet)
     # def getExposureAutoMode(self):
     #     return self.camera.MV_CC_GetExposureAutoMode()
-    def setExposureAuto(self, node_value = 0):
-        self.set_Value("enum_value",node_name="ExposureAuto",node_value=node_value)
-    def getExposureAuto(self):
-        return self.get_Value("enum_value",node_name="ExposureAuto")
+    # def setExposureAuto(self, node_value = 0):
+    #     self.set_Value("enum_value",node_name="ExposureAuto",node_value=node_value)
+    # def getExposureAuto(self):
+    #     return self.get_Value("enum_value",node_name="ExposureAuto")
     def setExposureTime(self, exp_time):
         self.set_Value(param_type="float_value", node_name="ExposureTime", node_value=exp_time)
     def getExposureTime(self):
         return self.get_Value("float_value","ExposureTime")
 
     #设置增益模式
-    def setGainMode(self,value):
-        self.set_Value(param_type="int_value", node_name="GainMode", node_value=value)
-    def getGainMode(self):
-        return self.camera.MV_CC_GetGainMode()
+    # def setGainMode(self,value):
+    #     self.set_Value(param_type="int_value", node_name="GainMode", node_value=value)
+    # def getGainMode(self):
+    #     return self.camera.MV_CC_GetGainMode()
     #设置增益
     def setGain(self, gain):
         self.set_Value(param_type="float_value", node_name="Gain", node_value=gain)
     def getGain(self):
         return self.get_Value("float_value","Gain")
 
-    def setSharpnessEnable(self, node_value):
-        self.set_Value("bool_value","SharpnessEnable",node_value)
-    def getSharpnessEnable(self):
-        return self.get_Value("bool_value","SharpnessEnable") 
+    # def setSharpnessEnable(self, node_value):
+    #     self.set_Value("bool_value","SharpnessEnable",node_value)
+    # def getSharpnessEnable(self):
+    #     return self.get_Value("bool_value","SharpnessEnable") 
 
-    #设置锐度
-    # def setSharpness(self, node_value):
-    #     nRet = self.camera.MV_CC_SetSharpness(node_value)
-    #     if nRet != 0:
-    #         raise Exception("Set Sharpness fail! nRet [0x%x]\n", nRet)
-    # def getSharpness(self):
-    #     return self.camera.MV_CC_GetSharpness() 
     def setSharpness(self, node_value):
         self.set_Value("int_value","Sharpness",node_value)
     def getSharpness(self):
@@ -270,5 +266,7 @@ class HKCamera():
         return self.get_Value("int_value","Sharpness") 
     def setLineDebouncerTime(self, node_value):
         self.set_Value("int_value","LineDebouncerTime",node_value)
+    def getLineDebouncerTime(self):
+        self.get_Value("int_value","LineDebouncerTime")
 
 cap = HKCamera()

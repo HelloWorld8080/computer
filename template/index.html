@@ -68,7 +68,7 @@
                         <tr>
                             <td>曝光时间(us)</td>
                             <td>
-                                <input  type="input" name="exposureTime" value="5000" placeholder="0-1000000"/>
+                                <input id="exposureTime"   type="input" name="exposureTime" placeholder="15-9999500"/>
                             </td>
                         </tr>
                         <!-- <tr>
@@ -82,26 +82,26 @@
                             </td>
                         </tr> -->
                         <tr>
-                            <td>增益</td>
+                            <td>增益(dB)</td>
                             <td>
-                                <input onchange="change(this)" type="range" min="0" max="230" step="1" name="gain" value="7"/><span>0.7</span>dB
+                                <input id="gain" type="input" name="gain" placeholder="0.00-23.00"/>
                             </td>
                         </tr>
                         <tr>
                             <td>锐度</td>
                             <td>
-                                <input onchange="change(this)" type="range" min="0" max="100" step="1" name="sharpness" value="100"/><span>100</span>
+                                <input id="sharpness"  onchange="change(this)" type="range" min="0" max="100" step="1" name="sharpness"/><span>100</span>
                             </td>
                         </tr>
                         <tr>
                             <td>线路防抖时间（us）</td>
-                            <td>
-                                <input  type="input" name="lineDebouncerTime" value="50" placeholder="0-1000000"/>
+                            <td>    
+                                <input id="gain" type="input" name="lineDebouncerTime" placeholder="0-1000000"/>
                             </td>
                         </tr>
 
-                    </table>
-                    <button type="button" id="submit">提交</button>
+                        </table>
+                        <button type="button" id="submit">提交</button>
                 </form>
             </div>
         </div>
@@ -154,14 +154,18 @@
             }
         });
 
-        // $.ajax({
-        //     type: "get",
-        //     url: serverUrl+"/getParameter",
-        //     dataType: "json",
-        //     success: function (data) {
-        //        console.log(data)
-        //     }
-        // });
+        $.ajax({
+            type: "get",
+            url: serverUrl+"/getParameter",
+            dataType: "json",
+            success: function (data) {
+                
+                for (var key in data){
+                    $(`input[name=${key}]`)[0].value=data[key]
+                }
+
+            }
+        });
     };
     function render(){
         for (let item of tableData) {

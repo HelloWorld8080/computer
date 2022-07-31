@@ -27,10 +27,11 @@ def getParameter():
     data = {
         # "exposureAutoMode":cap.getExposureAutoMode(),
         "exposureTime": cap.getExposureTime(),
-        "gainMode": cap.getGainMode(),
-        "gain": cap.getGain(),
-        "sharpnessEnable":cap.getSharpnessEnable(),
-        "sharpness":cap.getSharpness()
+        # "gainMode": cap.getGainMode(),
+        "gain": round(cap.getGain()/10, 2),
+        # "sharpnessEnable":cap.getSharpnessEnable(),
+        "sharpness":cap.getSharpness(),
+        "lineDebouncerTime":cap.getSharpness()
     }
     return json.dumps(data)
     
@@ -40,7 +41,7 @@ def setParameter():
     # exposure_time= request.args.get('exposureTime') if bool(request.args.get('exposureTime')) else get
     exposure_time = float(request.args.get('exposureTime'))
     # gainMode= request.args.get('gainMode')
-    gain = float(request.args.get('gain'))/10
+    gain = float(request.args.get('gain'))*10
     # sharpnessEnable = False if request.args.get('sharpnessEnable')=="0" else True
     sharpness = int(request.args.get('sharpness'))
     lineDebouncerTime = int(request.args.get('lineDebouncerTime'))
