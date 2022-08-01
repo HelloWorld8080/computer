@@ -2,7 +2,7 @@ from jinja2 import FileSystemLoader, Environment
 from sanic import Sanic, HTTPResponse
 import os
 import json
-
+import socket
 app = Sanic(__name__)
 
 templates_dir = 'template'
@@ -11,6 +11,11 @@ environment = Environment(loader=file_loader, enable_async=True)
 
 @app.route('/')
 async def test(request):
+    # 获取本机计算机名称
+    hostname = socket.gethostname()
+    # 获取本机ip
+    ip = socket.gethostbyname(hostname)
+    print(ip)
     templates = environment.get_template('index.html')
     result = await templates.render_async()
     return HTTPResponse(result, content_type='text/html')

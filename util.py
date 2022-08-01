@@ -4,12 +4,12 @@ import cv2
 from pyzbar import pyzbar as pbar
 from PIL import Image, ImageDraw, ImageFont
 import json
-
+from pathPro import ROOT
 def uhasDetectCode(frame):
     return str(len(pbar.decode(frame)))
 
 def decode(img_path,pathdir,key):
-    image = cv2.imread(img_path)
+    image = cv2.imread(os.path.join(ROOT,img_path))
     barcodes = pbar.decode(image)
     length = len(barcodes)
     # print(list(range(0,7)))
@@ -28,22 +28,20 @@ def decode(img_path,pathdir,key):
         barcodeData = barcode.data.decode("utf-8")
         barcodeType = barcode.type
         # 不能显示中文
-        # 绘出图像上条形码的数据和条形码类型
-        text = "{} ({})".format(barcodeData, barcodeType)
         # 更换为：
         img_PIL = Image.fromarray(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
         # 参数（字体，默认大小）
-        font = ImageFont.truetype('fontx/simfang.ttf', 25)
+        font = ImageFont.truetype(os.path.join(ROOT,'fontx/simfang.ttf'), 100)
         # 字体颜色（rgb)
         fillColor = (0, 255, 0)
         # 文字输出位置
         position = (x, y - 30)
         # 输出内容
         #str = barcodeData
-        str = "成功"
+        text = str(i)
         # 需要先把输出的中文字符转换成Unicode编码形式(  str.decode("utf-8)   )
         draw = ImageDraw.Draw(img_PIL)
-        draw.text(position, str, font=font, fill=fillColor)
+        draw.text(position, text, font=font, fill=fillColor)
         # 使用PIL中的save方法保存图片到本地
         # img_PIL.save('02.jpg', 'jpeg')
         # path = './result/'
@@ -61,12 +59,12 @@ def decode(img_path,pathdir,key):
     print("results:",results)
     print('\n')
     data = {}
-    img_str = os.path.join(pathdir,'image_result.png')
-    cv2.imwrite(img_str, image, [cv2.IMWRITE_PNG_COMPRESSION, 0])
+    img_str = os.path.join(pathdir,'image_result.bmp')
+    cv2.imwrite(os.path.join(ROOT,img_str), image, [cv2.IMWRITE_PNG_COMPRESSION, 0])
     json_result = os.path.join(pathdir,"image_result.json")
     data["image"] = img_path  # 保存原图路径
     data["image_result"] = img_str  # 保存识别结果图片路径
     data["key"] = key
     data["data"] = results # 保存Json识别结果
-    with open(json_result, "w", encoding='utf-8') as fw:
+    with open(os.path.join(ROOT,json_result), "w", encoding='utf-8') as fw:
         fw.write(json.dumps(data))

@@ -7,7 +7,7 @@ import os
 # sys.path.append("/opt/MVS/Samples/aarch64/Python/MvImport")
 # os.environ['MVCAM_COMMON_RUNENV'] = "/opt/MVS/lib"
 from MVS.MvCameraControl_class import * #调用了MvCameraControl_class.py文件
-
+from pathPro import ROOT
 
 class HKCamera():
     def __init__(self, CameraIdx=0, log_path=None):
@@ -83,7 +83,7 @@ class HKCamera():
             # if ret != 2147484163: 
             raise Exception("open device fail! ret[0x%x]" % ret)
 
-        ret = camera.MV_CC_FeatureLoad("./MV-CA050-12UM_K27297324.mfs")
+        ret = camera.MV_CC_FeatureLoad(os.path.join(ROOT,"./MV-CA050-12UM_K27297324.mfs"))
         if ret != 0:
             raise Exception("FeatureLoad fail! ret[0x%x]" % ret)
             
@@ -123,14 +123,14 @@ class HKCamera():
         # cv2.imwrite("./image.bmp", frame) 
         now = time.time()
         key = 'img_' + str(int(now))
-        pathdir = os.path.join('result', key)
-        if os.path.exists(pathdir) == False:
-            os.makedirs(pathdir)
+        pathdir = os.path.join('static/result', key)
+        if os.path.exists(os.path.join(ROOT,pathdir)) == False:
+            os.makedirs(os.path.join(ROOT,pathdir))
         img_path = os.path.join(pathdir, 'image.bmp')
-        cv2.imwrite(img_path, frame)  # 保存路径
+        cv2.imwrite(os.path.join(ROOT,img_path), frame)  # 保存路径
         decode(img_path, pathdir, key)
         print("拍照完成")
-        return os.path.join(pathdir, "image_result.json")
+        return os.path.join(os.path.join(ROOT,pathdir), "image_result.json")
     def hasDetectCode(self):
         frame = self.get_image()
         return uhasDetectCode(frame)

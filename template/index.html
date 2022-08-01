@@ -112,7 +112,7 @@
 </div>
 </body>
 <!--<script src="/static/index.js"></script>-->
-<script type="text/javascript" src="/lib/jquery-3.2.1.min.js"></script>
+<script type="text/javascript" src="static/jquery-3.2.1.min.js"></script>
 <script>
     const pictureList = document.querySelector(".picture-list");
     const center = document.querySelector(".center");
@@ -124,7 +124,7 @@
     let oldimg = {}
     oldimgNode = null
     curimgNode = null
-    const serverUrl = "http://192.168.1.102:5000"
+    const serverUrl = ""
     window.onload = function () {
         console.log("fdfd");
 
@@ -272,7 +272,7 @@
         $.ajax({
             type: "get",
             url: serverUrl + "/shot",
-            success: function(data){
+            success: function(data){        
                 tableData.push(data)
                 curimg = data
                 renderPictureList(curimg)

@@ -1,3 +1,8 @@
+## 下载服务包
+cd Desktop
+git clone -b qrcodeDetect https://github.com/HelloWorld8080/computer.git qrcode_detect
+cd qrcode_detect
+
 ## git环境配置
 git config --global user.email "you@example.com"
 git config --global user.name "Your Name"
@@ -19,3 +24,4 @@ dpkg -i ./lib/MVS-2.1.1_aarch64_20220511.deb
 若可以检测到相机设备，但是无法打开相机，可以输入
 lsof -i tcp:5000 看是否有其他线程占用端口。
 再 kill pid 关闭线程。
+

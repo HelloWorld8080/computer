@@ -3,22 +3,25 @@ import json
 from xmlrpc.client import boolean
 from flask import Flask
 from flask_cors import CORS
-from flask import request
+from flask import request,render_template
 from numpy import int0
 from camera import cap
 import requests
+from pathPro import ROOT
 requests.DEFAULT_RETRIES = 5  # 增加重试连接次数
 s = requests.session()
 s.keep_alive = False
-app = Flask(__name__)
+app = Flask(__name__,template_folder='template')
 CORS(app, resources=r'/*')
 @app.route('/get_result')
 def get_result():
     data = []
-    for filepath in os.listdir('result'):
-        path = os.path.join(os.path.join('result', filepath), 'image_result.json')
-        with open(path, 'r', encoding='utf-8') as fr:
-            data.append(json.load(fr))
+    for filepath in os.listdir(os.path.join(ROOT,'static/result')):
+        pathdir = os.path.join(os.path.join(ROOT,'static/result'),filepath)
+        if os.path.isfile(os.path.join(pathdir,'image_result.bmp'))==True and os.path.isfile(os.path.join(pathdir,'image.bmp'))==True and os.path.isfile(os.path.join(pathdir,'image_result.json'))==True:
+            with open(os.path.join(pathdir,'image_result.json'), 'r', encoding='utf-8') as fr:
+                data.append(json.load(fr))
+        
     return json.dumps(data)
 
 @app.route('/getParameter')
@@ -68,6 +71,10 @@ def shot():
     result_path = cap.cameraShot()
     with open(result_path, 'r', encoding='utf-8') as fr:
         return json.load(fr)
+        
+@app.route('/')
+def index():
+    return render_template('index.html')
 
 if __name__ == '__main__':
     print('web服务启动')
