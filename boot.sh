@@ -3,6 +3,20 @@
 # source /home/orangepi/Desktop/qrcode_detect/venv/bin/activate
 
 # 开启web服务、gpio触发服务、ui服务
+# export MVCAM_SDK_PATH=/home/orangepi/Desktop/qrcode_detect/MVS
 
-sudo apt-get -y install libzbar-dev=0.23.92-4build2
-sudo dpkg -i ./lib/MVS-2.1.1_aarch64_20220511.deb
+# export MVCAM_COMMON_RUNENV=/home/orangepi/Desktop/qrcode_detect/MVS/lib
+# export LD_LIBRARY_PATH=/home/orangepi/Desktop/qrcode_detect/MVS/lib/aarch64:$LD_LIBRARY_PATH
+
+#  /home/orangepi/Desktop/qrcode_detect/venv/bin/python /home/orangepi/Desktop/qrcode_detect/webserver.py
+
+export MVCAM_SDK_PATH=$(dirname $(readlink -f "$0"))/MVS
+
+export MVCAM_COMMON_RUNENV=$(dirname $(readlink -f "$0"))/MVS/lib
+export LD_LIBRARY_PATH=$(dirname $(readlink -f "$0"))/MVS/lib/aarch64:$LD_LIBRARY_PATH
+
+# $(dirname $(readlink -f "$0"))/webserver
+$(dirname $(readlink -f "$0"))/venv/bin/python $(dirname $(readlink -f "$0"))/webserver.py
+echo $(dirname $(readlink -f "$0"))
+echo "webserver boot success"
+

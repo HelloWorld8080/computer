@@ -1,16 +1,10 @@
 import os
 import json
-from xmlrpc.client import boolean
 from flask import Flask
 from flask_cors import CORS
 from flask import request,render_template
-from numpy import int0
 from camera import cap
-import requests
 from pathPro import ROOT
-requests.DEFAULT_RETRIES = 5  # 增加重试连接次数
-s = requests.session()
-s.keep_alive = False
 app = Flask(__name__,template_folder='template')
 CORS(app, resources=r'/*')
 @app.route('/get_result')
@@ -78,4 +72,8 @@ def index():
 
 if __name__ == '__main__':
     print('web服务启动')
+    # t = threading.currentThread()
+    # logging.warn("web服务threading"+str(t.ident))
+    # pid = os.getpid()
+    # logging.warn("web服务process"+str(pid))
     app.run(host="0.0.0.0", port=5000)

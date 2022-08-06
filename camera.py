@@ -2,11 +2,21 @@ import numpy as np
 import cv2
 from util import decode,uhasDetectCode
 import time
-import sys
 import os
+import sys
+from pathPro import ROOT
+ 
+
 # sys.path.append("/opt/MVS/Samples/aarch64/Python/MvImport")
 # os.environ['MVCAM_COMMON_RUNENV'] = "/opt/MVS/lib"
-from MVS.MvCameraControl_class import * #调用了MvCameraControl_class.py文件
+# from MvCameraControl_class import *
+
+sys.path.append(os.path.join(ROOT,"MVS/Samples/aarch64/Python/MvImport"))
+os.environ['MVCAM_COMMON_RUNENV'] = os.path.join(ROOT,"MVS/lib")
+
+from MvCameraControl_class import *
+
+# from MVS.MvCameraControl_class import * #调用了MvCameraControl_class.py文件
 from pathPro import ROOT
 
 class HKCamera():
@@ -46,10 +56,18 @@ class HKCamera():
             if device == 0:
                 cameraType = MV_GIGE_DEVICE | MV_USB_DEVICE | MV_UNKNOW_DEVICE | MV_1394_DEVICE | MV_CAMERALINK_DEVICE
                 deviceList = MV_CC_DEVICE_INFO_LIST()
+
                 # 枚举设备
                 ret = MvCamera.MV_CC_EnumDevices(cameraType, deviceList)
+                # 1 获取线程ID,NAME
+                t = threading.currentThread()
+                pid = os.getpid()
+                
                 if ret != 0:
-                    raise Exception("enum devices fail! ret[0x%x]" % ret)
+                    raise Exception("process id : %s,Thread id : %d, devicelist: %s enum devices fail! ret[0x%x]" %(t.ident,
+                    pid,    
+                    deviceList.nDeviceNum,
+                    ret))
                 return deviceList
             else:
                 pass
@@ -82,10 +100,9 @@ class HKCamera():
         if ret != 0:
             # if ret != 2147484163: 
             raise Exception("open device fail! ret[0x%x]" % ret)
-
-        ret = camera.MV_CC_FeatureLoad(os.path.join(ROOT,"./MV-CA050-12UM_K27297324.mfs"))
+        ret = camera.MV_CC_FeatureLoad(os.path.join(ROOT,"MV-CA050-12UM_K27297324.mfs"))
         if ret != 0:
-            raise Exception("FeatureLoad fail! ret[0x%x]" % ret)
+            raise Exception("Path %s FeatureLoad fail! ret[0x%x]" % (os.path.join(ROOT,"MV-CA050-12UM_K27297324.mfs"),ret))
             
         return camera
 
