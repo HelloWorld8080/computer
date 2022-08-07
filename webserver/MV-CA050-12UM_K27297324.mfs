@@ -1,0 +1,6 @@
+# {05D8C294-F295-4dfb-9D01-096BD04049F4}
+# GenApi persistence file (version 3.0.0)
+# Device = HIKROBOT::HIKCamera -- HIKROBOT U3V Vision Camera Interface -- Device version = 1.0.0 -- Product GUID = EE4B7E09-DA29-4956-A1EC-212263331CFC -- Product version GUID = 3a24a9d6-13c7-4690-a90a-06dd73284b5d
+ExposureAuto	Off
+GainAuto	Off
+SharpnessEnable	1

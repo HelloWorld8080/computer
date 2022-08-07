@@ -1,0 +1,10 @@
+[Unit]
+Description=qrcode Service 
+After=qrcode-webserver.service
+
+[Service]
+EnvironmentFile=/etc/sysconfig/qrcodeDetectEx
+ExecStart=/bin/bash ${QRCODE_SERVER}
+Restart=on-failure
+[Install]
+WantedBy=multi-user.target
