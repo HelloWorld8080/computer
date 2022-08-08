@@ -33,7 +33,7 @@ def getParameter():
     return json.dumps(data)
     
 @app.route('/setParameter')
-def setParameter():
+def setParameter(): 
     # exposureAutoMode= request.args.get('exposureAutoMode')
     # exposure_time= request.args.get('exposureTime') if bool(request.args.get('exposureTime')) else get
     exposure_time = float(request.args.get('exposureTime'))
@@ -59,7 +59,13 @@ def setParameter():
 @app.route('/hasDetectCode')
 def hasDetectCode():
     return cap.hasDetectCode()
-    
+
+@app.route('/saveResults')
+def saveResults():
+    pathdir = request.args.get('pathdir')
+    cap.saveResults(pathdir)
+    return "保存成功"
+
 @app.route('/shot')
 def shot():
     result_path = cap.cameraShot()
