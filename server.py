@@ -4,7 +4,7 @@ import shutil
 import json
 from pathPro import ROOT
 import os
-
+import re
 trigger = ""
 pathdir= ""
 print("扫码服务启动")
@@ -21,7 +21,8 @@ while True:
             time.sleep(1)
     except Exception as e:
         print("trigger:",trigger," pathdir:",pathdir)
-        if os.path.exists(os.path.join(ROOT,pathdir)):
+
+        if re.match(r'^static/result/.',pathdir) and os.path.exists(os.path.join(ROOT,pathdir)):
             shutil.rmtree(os.path.join(ROOT,pathdir))
         print("webserver未启动或崩溃，请重启启webserver服务")
         time.sleep(1)

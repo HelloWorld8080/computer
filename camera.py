@@ -144,6 +144,8 @@ class HKCamera():
         return os.path.join(os.path.join(ROOT,pathdir), "image_result.json")
     def hasDetectCode(self):
         frame = self.get_image()
+        if frame is None:
+            return json.dumps({"trigger":"0","pathdir":""})
         trigger = str(len(pbar.decode(frame)))
         if trigger == '0':
             return json.dumps({"trigger":"0","pathdir":""})
